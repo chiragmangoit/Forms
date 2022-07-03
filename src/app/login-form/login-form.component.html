@@ -1,0 +1,40 @@
+<div class="container">
+  <div class="row">
+    <div class="row">
+      <button
+      type="button"
+      class="btn btn-primary"
+      data-toggle="modal"
+      data-target=".bd-example-modal-lg"
+      (click)="showForm('template')"
+    >
+      Template Driven
+    </button>
+    <button
+      type="button"
+      class="btn btn-primary mx-3"
+      data-toggle="modal"
+      data-target=".bd-example-modal-lg"
+      (click)="showForm('reactive')"
+    >
+      Reactive
+    </button>
+    </div>
+    <div
+      class="modal fade bd-example-modal-lg"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="myLargeModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <app-forms *ngIf="formValue === 'template'"></app-forms>
+          <app-reactive-form
+            *ngIf="formValue === 'reactive'"
+          ></app-reactive-form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,26 @@
+<div class="container">
+  <table *ngFor="let user of usersData; let i = index">
+    <h3>user{{ i }}</h3>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Gender</th>
+      <th>Action</th>
+    </tr>
+    <tr>
+      <td>{{ user.name }}</td>
+      <td>{{ user.email }}</td>
+      <td>{{ user.gender }}</td>
+      <td>
+        <button
+          class="btn btn-secondary"
+          type="button"
+          routerLink="edit/{{i}}"
+        >
+          Edit
+        </button>
+      </td>
+    </tr>
+  </table>
+</div>
+<router-outlet></router-outlet>
