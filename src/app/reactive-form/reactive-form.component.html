@@ -1,66 +1,314 @@
 <div class="container">
   <div class="row">
-    <div class="col-md-12">
-      <form [formGroup]="project" (ngSubmit)="onSaveProject()">
-        <div class="form-group">
-          <label for="name">My Project</label>
-          <input
-            type="text"
-            id="projectName"
-            class="form-control"
-            formControlName="projectName"
-          />
-          <div class="help-block">
-            <span
-              *ngIf="
-                project.get('projectName').touched &&
-                project.get('projectName').hasError('required')
-              "
-              >This Field is required</span
+    <div>
+      <form [formGroup]="regForm" (ngSubmit)="onSubmit()">
+        <mat-horizontal-stepper>
+          <mat-step label="Step 1">
+            <div
+              id="user-data"
+              formGroupName="userDataOne"
             >
-            <span
-              *ngIf="
-                project.get('projectName').touched &&
-                project.get('projectName').hasError('invalidProjectName')
-              "
-              >Name cannot be Test</span
+              <div class="form-group">
+                <label for="username">Name</label>
+                <input
+                  type="text"
+                  id="username"
+                  class="form-control"
+                  name="username"
+                  [(ngModel)]="user['name']"
+                  #username="ngModel"
+                  required
+                />
+                <span
+                  class="help-block"
+                  *ngIf="!username.valid && username.touched"
+                  >Please Enter Username!</span
+                >
+              </div>
+              <div class="form-group">
+                <label for="email">Mail</label>
+                <input
+                  type="email"
+                  id="email"
+                  class="form-control"
+                  name="email"
+                  [(ngModel)]="user['email']"
+                  required
+                  email
+                  #email="ngModel"
+                />
+                <span
+                  class="help-block"
+                  *ngIf="!email.valid && email.touched && email.errors.required"
+                  >Email is required!</span
+                >
+                <span
+                  class="help-block"
+                  *ngIf="!email.valid && email.touched && email.errors.email"
+                  >Please Enter a Valid Email!</span
+                >
+              </div>
+              <div class="form-group">
+                Gender
+                <div class="radio" *ngFor="let gender of genders">
+                  <label for="gender">
+                    <input
+                      type="radio"
+                      name="gender"
+                      value="{{ gender }}"
+                      [(ngModel)]="user['gender']"
+                      required
+                      #gender="ngModel"
+                    />
+                    {{ gender }}
+                  </label>
+                  <span
+                    class="help-block"
+                    *ngIf="!gender.valid && gender.touched"
+                    >Please Select Gender!</span
+                  >
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="dob">DOB</label>
+                <input
+                  type="date"
+                  id="dateOfBirth"
+                  class="form-control"
+                  name="dob"
+                  [(ngModel)]="user['dob']"
+                  #dob="ngModel"
+                  required
+                />
+                <span class="help-block" *ngIf="!dob.valid && dob.touched"
+                  >Please Enter dob!</span
+                >
+              </div>
+              <button
+                mat-button
+                matStepperNext
+                [disabled]="!userDataOne.valid"
+                type="button"
+                class="btn btn-primary"
+              >
+                Next
+              </button>
+            </div>
+          </mat-step>
+          <mat-step label="Step 2">
+            <div
+              id="user-data"
+              formGroupName="userDataTwo"
             >
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            type="text"
-            id="email"
-            class="form-control"
-            formControlName="email"
-          />
-          <div class="help-block">
-            <span
-              *ngIf="
-                project.get('email').touched &&
-                project.get('email').hasError('required')
-              "
-              >This Field is required</span
+              <div class="form-group" *ngIf="!editMode">
+                <label for="profilePic">Profile Image</label>
+                <input
+                  type="file"
+                  id="profilePic"
+                  class="form-control"
+                  name="pic"
+                  [(ngModel)]="user['dp']"
+                  #pic="ngModel"
+                  required
+                  style="border: none"
+                />
+                <span class="help-block" *ngIf="!pic.valid && pic.touched"
+                  >Please Enter pic!</span
+                >
+              </div>
+              <div class="form-group">
+                <label for="hobby"
+                  >Hobbies
+                  <div class="form-group d-flex">
+                    <div *ngFor="let hobby of hobbies">
+                      <label class="mx-2">
+                        <input
+                          type="checkbox"
+                          id="hobbies"
+                          class="form-control"
+                          name="{{ hobby.id }}"
+                          [ngModel]="hobby.selected"
+                          #hobby="ngModel"
+                        />
+                        {{ hobby.name }}
+                      </label>
+                    </div>
+                  </div>
+                </label>
+              </div>
+              <div class="form-group">
+                <label for="Phone">Mobile Number</label>
+                <input
+                  type="tel"
+                  name="number"
+                  id="number"
+                  class="form-control"
+                  [(ngModel)]="user['phoneNum']"
+                  #number="ngModel"
+                  required
+                  pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                  placeholder="123-456-7890"
+                />
+                <span class="help-block" *ngIf="!number.valid && number.touched"
+                  >Number should be in format:-123-456-7890</span
+                >
+              </div>
+            </div>
+            <button
+              mat-button
+              matStepperPrevious
+              class="btn btn-primary"
+              type="button"
             >
-            <span
-              *ngIf="
-                project.get('email').touched &&
-                project.get('email').hasError('email')
-              "
-              >Invalid Email</span
+              prev
+            </button>
+            <button
+              mat-button
+              matStepperNext
+              class="btn btn-primary mx-3"
+              type="button"
+              [disabled]="!userDataTwo.valid"
             >
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="projectStatus">Project Status</label>
-          <select id="status" class="form-control" formControlName="status">
-            <option *ngFor="let state of status" [value]="state">
-              {{ state }}
-            </option>
-          </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Create Project</button>
+              Next
+            </button>
+          </mat-step>
+          <mat-step label="Step 3">
+            <div
+              id="user-data"
+              formGroupName="userDataThree"
+            >
+              <div class="form-group">
+                <label for="Qualification">Qualification</label>
+                <ng-multiselect-dropdown
+                  [settings]="dropdownSettings"
+                  [data]="dropdownList"
+                  [(ngModel)]="user['qualification']"
+                  name="qualification"
+                  required
+                  #qualification="ngModel"
+                >
+                </ng-multiselect-dropdown>
+                <span
+                  class="help-block"
+                  *ngIf="!qualification.valid && qualification.touched"
+                >
+                  Please Select Qualification
+                </span>
+              </div>
+              <div class="form-group">
+                <label for="profession">Profession</label>
+                <select
+                  class="form-control dropdown"
+                  id="occupation"
+                  name="occupation"
+                  [(ngModel)]="user['profession']"
+                  required
+                  #prof="ngModel"
+                >
+                  <option value="" selected="selected" disabled="disabled">
+                    -- select one --
+                  </option>
+                  <option *ngFor="let item of profession" value="{{ item }}">
+                    {{ item }}
+                  </option>
+                </select>
+                <span class="help-block" *ngIf="!prof.valid && prof.touched"
+                  >Please select profession
+                </span>
+              </div>
+              <div class="form-group">
+                <label for="Description">Description</label>
+                <div>
+                  <textarea
+                    name="description"
+                    class="form-control"
+                    rows="4"
+                    cols="40"
+                    [(ngModel)]="user['description']"
+                    required
+                    #desc="ngModel"
+                  ></textarea>
+                  <span class="help-block" *ngIf="!desc.valid && desc.touched">
+                    Description is required
+                  </span>
+                </div>
+              </div>
+              <label for="Contact">Contact Person</label>
+              <div
+                class="form-group d-flex flex-wrap"
+                *ngFor="let list of contact; let i = index"
+              >
+                <div>
+                  <label for="name" class="mx-3">Name</label>
+                  <input
+                    type="text"
+                    name="contactName{{ i }}"
+                    id="contactName"
+                    [(ngModel)]="list.contactName"
+                    required
+                    #contactName="ngModel"
+                    [placeholder]="
+                      !contactName.valid && contactName.touched
+                        ? ' Contact Name is required'
+                        : ''
+                    "
+                  />
+                </div>
+                <div>
+                  <label for="phoneNumber" class="mx-3">Phone Number</label>
+                  <input
+                    type="number"
+                    name="contactNumber{{ i }}"
+                    id="contactNumber"
+                    [(ngModel)]="list.contactNumber"
+                    required
+                    #contactNumber="ngModel"
+                    [placeholder]="
+                      !contactNumber.valid && contactNumber.touched
+                        ? 'Contact Number is required'
+                        : ''
+                    "
+                  />
+                </div>
+                <div>
+                  <button
+                    style="margin: -4px 0px 0px 8px"
+                    type="button"
+                    class="btn btn-danger"
+                    (click)="onRemoveContacts(i)"
+                  >
+                    X
+                  </button>
+                </div>
+              </div>
+              <button
+                type="button"
+                class="btn btn-success my-2"
+                (click)="onAddContacts()"
+              >
+                Add New
+              </button>
+            </div>
+            <div>
+              <button
+                mat-button
+                matStepperPrevious
+                class="btn btn-primary"
+                type="button"
+              >
+                prev
+              </button>
+
+              <button
+                [disabled]="regForm.invalid"
+                class="btn btn-primary mx-3"
+                type="submit"
+              >
+                {{ !editMode  ? 'Submit' : 'update'}}
+              </button>
+            </div>
+          </mat-step>
+        </mat-horizontal-stepper>
       </form>
     </div>
   </div>
