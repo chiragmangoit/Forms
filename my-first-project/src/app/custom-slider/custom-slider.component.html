@@ -1,9 +1,0 @@
-<div class="container-fluid">
-  <div class="d-flex justify-content-center my-5">
-    <img src="{{imgSrc[index]}}" alt="image">
-  </div>
-  <div class="d-flex justify-content-center">
-    <button [disabled]="index === 0 ? value : !value" class="btn btn-primary" (click)="decrease()">Prev</button>
-    <button [disabled]="index === imgSrc.length -1  ? value : !value" class="btn btn-primary mx-3" (click)="increase()">Next</button>
-  </div>
-</div>
