@@ -1,28 +1,34 @@
 <div class="container">
   <div class="row">
     <div>
+      <h2 style="text-align: center">Reactive Form</h2>
       <form [formGroup]="regForm" (ngSubmit)="onSubmit()">
         <mat-horizontal-stepper>
           <mat-step label="Step 1">
-            <div
-              id="user-data"
-              formGroupName="userDataOne"
+            <span
+              *ngIf="
+                regForm.get('userDataOne').touched &&
+                !regForm.get('userDataOne').valid
+              "
+              class="help-block"
+              >Please Enter All Values!</span
             >
+            <div id="user-data" formGroupName="userDataOne">
               <div class="form-group">
                 <label for="username">Name</label>
                 <input
                   type="text"
                   id="username"
                   class="form-control"
-                  name="username"
-                  [(ngModel)]="user['name']"
-                  #username="ngModel"
-                  required
+                  formControlName="name"
                 />
                 <span
+                  *ngIf="
+                    regForm.get('userDataOne.name').touched &&
+                    regForm.get('userDataOne.name').hasError('required')
+                  "
                   class="help-block"
-                  *ngIf="!username.valid && username.touched"
-                  >Please Enter Username!</span
+                  >Please Enter Name!</span
                 >
               </div>
               <div class="form-group">
@@ -31,63 +37,73 @@
                   type="email"
                   id="email"
                   class="form-control"
-                  name="email"
-                  [(ngModel)]="user['email']"
-                  required
-                  email
-                  #email="ngModel"
+                  formControlName="email"
                 />
                 <span
+                  *ngIf="
+                    regForm.get('userDataOne.email').touched &&
+                    regForm.get('userDataOne.email').hasError('required')
+                  "
                   class="help-block"
-                  *ngIf="!email.valid && email.touched && email.errors.required"
                   >Email is required!</span
                 >
                 <span
+                  *ngIf="
+                    regForm.touched &&
+                    regForm.get('userDataOne.email').hasError('email')
+                  "
                   class="help-block"
-                  *ngIf="!email.valid && email.touched && email.errors.email"
                   >Please Enter a Valid Email!</span
                 >
               </div>
               <div class="form-group">
                 Gender
-                <div class="radio" *ngFor="let gender of genders">
-                  <label for="gender">
+                <div
+                  class="form-check"
+                  *ngFor="let gender of genders; let i = index"
+                >
+                  <label class="form-check-label">
                     <input
+                      class="form-check-input"
                       type="radio"
-                      name="gender"
                       value="{{ gender }}"
-                      [(ngModel)]="user['gender']"
-                      required
-                      #gender="ngModel"
+                      formControlName="gender"
                     />
                     {{ gender }}
                   </label>
                   <span
+                    *ngIf="
+                      regForm.get('userDataOne.gender').touched &&
+                      regForm.get('userDataOne.gender').hasError('required')
+                    "
                     class="help-block"
-                    *ngIf="!gender.valid && gender.touched"
                     >Please Select Gender!</span
                   >
                 </div>
               </div>
               <div class="form-group">
-                <label for="dob">DOB</label>
-                <input
-                  type="date"
-                  id="dateOfBirth"
-                  class="form-control"
-                  name="dob"
-                  [(ngModel)]="user['dob']"
-                  #dob="ngModel"
-                  required
-                />
-                <span class="help-block" *ngIf="!dob.valid && dob.touched"
-                  >Please Enter dob!</span
+                <label for="dob"
+                  >DOB
+                  <input
+                    type="date"
+                    id="dateOfBirth"
+                    class="form-control"
+                    formControlName="dob"
+                  />
+                </label>
+                <span
+                  *ngIf="
+                    regForm.get('userDataOne.dob').touched &&
+                    regForm.get('userDataOne.dob').hasError('required')
+                  "
+                  class="help-block"
+                  >Please enter dob!</span
                 >
               </div>
               <button
                 mat-button
                 matStepperNext
-                [disabled]="!userDataOne.valid"
+                [disabled]="!regForm.get('userDataOne').valid"
                 type="button"
                 class="btn btn-primary"
               >
@@ -96,23 +112,29 @@
             </div>
           </mat-step>
           <mat-step label="Step 2">
-            <div
-              id="user-data"
-              formGroupName="userDataTwo"
+            <span
+              *ngIf="
+                regForm.get('userDataTwo').touched &&
+                !regForm.get('userDataTwo').valid
+              "
+              class="help-block"
+              >Please Enter All Values!</span
             >
+            <div id="user-data" formGroupName="userDataTwo">
               <div class="form-group" *ngIf="!editMode">
                 <label for="profilePic">Profile Image</label>
                 <input
                   type="file"
                   id="profilePic"
                   class="form-control"
-                  name="pic"
-                  [(ngModel)]="user['dp']"
-                  #pic="ngModel"
-                  required
-                  style="border: none"
+                  formControlName="dp"
                 />
-                <span class="help-block" *ngIf="!pic.valid && pic.touched"
+                <span
+                  *ngIf="
+                    regForm.get('userDataTwo.dp').touched &&
+                    regForm.get('userDataTwo.dp').hasError('required')
+                  "
+                  class="help-block"
                   >Please Enter pic!</span
                 >
               </div>
@@ -120,37 +142,95 @@
                 <label for="hobby"
                   >Hobbies
                   <div class="form-group d-flex">
-                    <div *ngFor="let hobby of hobbies">
-                      <label class="mx-2">
+                    <div
+                      *ngFor="let hobby of hobbies; let i = index"
+                      formArrayName="hobbies"
+                    >
+                      <label class="mx-3 form-check-label">
                         <input
                           type="checkbox"
                           id="hobbies"
-                          class="form-control"
-                          name="{{ hobby.id }}"
-                          [ngModel]="hobby.selected"
-                          #hobby="ngModel"
+                          class="form-check-input"
+                          value="{{ hobby.name }}"
+                          (change)="getSelectedHobby($event)"
+                          [checked]="hobby.selected"
                         />
                         {{ hobby.name }}
                       </label>
                     </div>
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      style="padding: 0px 8px 0px 8px;"
+                      (click)="addHobbies()"
+                    >
+                      +
+                    </button>
                   </div>
                 </label>
+                <div *ngIf="add == 1">
+                  <input type="text" formControlName="newHobby" />
+                  <button
+                    [disabled]="!regForm.get('userDataTwo.newHobby').valid"
+                    type="button"
+                    class="mx-2 btn btn-success"
+                    (click)="pushHobby()"
+                  >
+                    add
+                  </button>
+                  <button
+                    type="button"
+                    class="mx-2 btn btn-danger"
+                    (click)="onCancel()"
+                  >
+                    cancel
+                  </button>
+                </div>
               </div>
               <div class="form-group">
                 <label for="Phone">Mobile Number</label>
                 <input
                   type="tel"
-                  name="number"
                   id="number"
-                  class="form-control"
-                  [(ngModel)]="user['phoneNum']"
-                  #number="ngModel"
-                  required
-                  pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-                  placeholder="123-456-7890"
+                  class="square-div"
+                  formControlName="phoneNum1"
+                  maxlength="3"
                 />
-                <span class="help-block" *ngIf="!number.valid && number.touched"
-                  >Number should be in format:-123-456-7890</span
+                <input
+                  type="tel"
+                  id="number"
+                  class="square-div"
+                  formControlName="phoneNum2"
+                  maxlength="3"
+                />
+                <input
+                  type="tel"
+                  id="number"
+                  class="square-div"
+                  formControlName="phoneNum3"
+                  maxlength="4"
+                />
+                <span
+                  *ngIf="
+                    regForm.get('userDataTwo.phoneNum1').touched ||
+                    regForm.get('userDataTwo.phoneNum2').touched ||
+                    regForm.get('userDataTwo.phoneNum3').touched
+                  "
+                  class="help-block"
+                  >{{
+                    regForm.get("userDataTwo.phoneNum1").hasError("pattern") ||
+                    regForm.get("userDataTwo.phoneNum2").hasError("pattern") ||
+                    regForm.get("userDataTwo.phoneNum3").hasError("pattern")
+                      ? "Number should be in format:-123-456-7890"
+                      : ""
+                  }}
+                  {{
+                    regForm.get("userDataTwo.phoneNum1").hasError("required") ||
+                    regForm.get("userDataTwo.phoneNum2").hasError("required") ||
+                    regForm.get("userDataTwo.phoneNum3").hasError("required")
+                      ? "Number is Required"
+                      : ""
+                  }}</span
                 >
               </div>
             </div>
@@ -167,30 +247,37 @@
               matStepperNext
               class="btn btn-primary mx-3"
               type="button"
-              [disabled]="!userDataTwo.valid"
+              [disabled]="!regForm.get('userDataTwo').valid"
             >
               Next
             </button>
           </mat-step>
           <mat-step label="Step 3">
-            <div
-              id="user-data"
-              formGroupName="userDataThree"
+            <span
+              *ngIf="
+                regForm.get('userDataThree').touched &&
+                !regForm.get('userDataThree').valid
+              "
+              class="help-block"
+              >Please Enter All Values!</span
             >
+            <div id="user-data" formGroupName="userDataThree">
               <div class="form-group">
                 <label for="Qualification">Qualification</label>
                 <ng-multiselect-dropdown
                   [settings]="dropdownSettings"
                   [data]="dropdownList"
-                  [(ngModel)]="user['qualification']"
-                  name="qualification"
-                  required
-                  #qualification="ngModel"
+                  formControlName="qualification"
                 >
                 </ng-multiselect-dropdown>
                 <span
+                  *ngIf="
+                    regForm.get('userDataThree.qualification').touched &&
+                    regForm
+                      .get('userDataThree.qualification')
+                      .hasError('required')
+                  "
                   class="help-block"
-                  *ngIf="!qualification.valid && qualification.touched"
                 >
                   Please Select Qualification
                 </span>
@@ -200,10 +287,7 @@
                 <select
                   class="form-control dropdown"
                   id="occupation"
-                  name="occupation"
-                  [(ngModel)]="user['profession']"
-                  required
-                  #prof="ngModel"
+                  formControlName="profession"
                 >
                   <option value="" selected="selected" disabled="disabled">
                     -- select one --
@@ -212,7 +296,12 @@
                     {{ item }}
                   </option>
                 </select>
-                <span class="help-block" *ngIf="!prof.valid && prof.touched"
+                <span
+                  *ngIf="
+                    regForm.get('userDataThree.profession').touched &&
+                    regForm.get('userDataThree.profession').hasError('required')
+                  "
+                  class="help-block"
                   >Please select profession
                 </span>
               </div>
@@ -220,74 +309,80 @@
                 <label for="Description">Description</label>
                 <div>
                   <textarea
-                    name="description"
                     class="form-control"
                     rows="4"
                     cols="40"
-                    [(ngModel)]="user['description']"
-                    required
-                    #desc="ngModel"
+                    formControlName="description"
                   ></textarea>
-                  <span class="help-block" *ngIf="!desc.valid && desc.touched">
+                  <span
+                    *ngIf="
+                      regForm.get('userDataThree.description').touched &&
+                      regForm
+                        .get('userDataThree.description')
+                        .hasError('required')
+                    "
+                    class="help-block"
+                  >
                     Description is required
                   </span>
                 </div>
               </div>
-              <label for="Contact">Contact Person</label>
-              <div
-                class="form-group d-flex flex-wrap"
-                *ngFor="let list of contact; let i = index"
-              >
-                <div>
-                  <label for="name" class="mx-3">Name</label>
-                  <input
-                    type="text"
-                    name="contactName{{ i }}"
-                    id="contactName"
-                    [(ngModel)]="list.contactName"
-                    required
-                    #contactName="ngModel"
-                    [placeholder]="
-                      !contactName.valid && contactName.touched
-                        ? ' Contact Name is required'
-                        : ''
-                    "
-                  />
+              <div formArrayName="contacts">
+                <label for="Contact">Contact Person</label>
+                <div
+                  class="form-group d-flex flex-wrap"
+                  *ngFor="let list of controls; let i = index"
+                  [formGroupName]="i"
+                >
+                  <div>
+                    <label for="name" class="mx-3">Name</label>
+                    <input
+                      type="text"
+                      id="contactName"
+                      formControlName="name"
+                      placeholder="{{
+                        regForm.get('userDataThree.contacts').hasError &&
+                        regForm.get('userDataThree.contacts').touched
+                          ? 'name is required'
+                          : ''
+                      }}"
+                    />
+                  </div>
+                  <div>
+                    <label for="phoneNumber" class="mx-3">Phone Number</label>
+                    <input
+                      type="tel"
+                      id="contactNumber"
+                      formControlName="number"
+                      placeholder="{{
+                        regForm
+                          .get('userDataThree.contacts')
+                          .hasError('required') &&
+                        regForm.get('userDataThree.contacts').touched
+                          ? 'number is required'
+                          : 'format:-123-456-7890'
+                      }}"
+                    />
+                  </div>
+                  <div *ngIf="i != 0">
+                    <button
+                      style="margin: -4px 0px 0px 8px"
+                      type="button"
+                      class="btn btn-danger"
+                      (click)="onRemoveContacts(i)"
+                    >
+                      X
+                    </button>
+                  </div>
                 </div>
-                <div>
-                  <label for="phoneNumber" class="mx-3">Phone Number</label>
-                  <input
-                    type="number"
-                    name="contactNumber{{ i }}"
-                    id="contactNumber"
-                    [(ngModel)]="list.contactNumber"
-                    required
-                    #contactNumber="ngModel"
-                    [placeholder]="
-                      !contactNumber.valid && contactNumber.touched
-                        ? 'Contact Number is required'
-                        : ''
-                    "
-                  />
-                </div>
-                <div>
-                  <button
-                    style="margin: -4px 0px 0px 8px"
-                    type="button"
-                    class="btn btn-danger"
-                    (click)="onRemoveContacts(i)"
-                  >
-                    X
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  class="btn btn-success my-2"
+                  (click)="onAddContacts()"
+                >
+                  Add New
+                </button>
               </div>
-              <button
-                type="button"
-                class="btn btn-success my-2"
-                (click)="onAddContacts()"
-              >
-                Add New
-              </button>
             </div>
             <div>
               <button
@@ -298,13 +393,12 @@
               >
                 prev
               </button>
-
               <button
-                [disabled]="regForm.invalid"
+                [disabled]="!regForm.valid"
                 class="btn btn-primary mx-3"
                 type="submit"
               >
-                {{ !editMode  ? 'Submit' : 'update'}}
+                {{ !editMode ? "Submit" : "update" }}
               </button>
             </div>
           </mat-step>

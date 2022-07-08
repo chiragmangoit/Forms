@@ -13,6 +13,8 @@ import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { MatStepperModule } from '@angular/material/stepper';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AddSectionDirective } from './directives/add-section.directive';
+import { HomeEditComponent } from './home/home-edit/home-edit.component';
+import { HttpClientModule } from '@angular/common/http';
 
 
 @NgModule({
@@ -23,7 +25,8 @@ import { AddSectionDirective } from './directives/add-section.directive';
     FormsComponent,
     ReactiveFormComponent,
     LoginFormComponent,
-    AddSectionDirective
+    AddSectionDirective,
+    HomeEditComponent
   ],
   imports: [
     BrowserModule,
@@ -33,6 +36,7 @@ import { AddSectionDirective } from './directives/add-section.directive';
     NgMultiSelectDropDownModule.forRoot(),
     MatStepperModule,
     BrowserAnimationsModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
